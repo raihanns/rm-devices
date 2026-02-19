@@ -39,7 +39,8 @@ export default function UploadPage() {
           model: row.Model || 'Unknown',
           price: Number(row.Price) || 0,
           capital_price: Number(row.Capital_Price) || 0,
-          discount_percentage: Number(row.Discount_Percentage) || 0,
+          discount_value: Number(row.Discount_Value) || 0,
+          discount_type: row.Discount_Type || 'percentage',
           storage: row.Storage || 'N/A',
           condition: row.Condition || 'Unknown',
           images: row.Images 
@@ -159,9 +160,10 @@ export default function UploadPage() {
         Brand: 'Apple',
         Model: 'iPhone 15 Pro',
         SKU: 'RM-APL-IP15P-BLK',
-        Price: 15000000,
-        Capital_Price: 13000000,
-        Discount_Percentage: 5,
+        Price: 19000000,
+        Capital_Price: 16500000,
+        Discount_Value: 5,
+        Discount_Type: 'percentage',
         Storage: '256GB',
         Condition: 'Brand New',
         Images: 'https://example.com/image1.jpg,https://example.com/image2.jpg,https://example.com/image3.jpg',
@@ -170,9 +172,10 @@ export default function UploadPage() {
         Brand: 'Samsung',
         Model: 'Galaxy S24 Ultra',
         SKU: 'RM-SAM-S24U-BLK',
-        Price: 18000000,
-        Capital_Price: 16000000,
-        Discount_Percentage: 0,
+        Price: 22000000,
+        Capital_Price: 19500000,
+        Discount_Value: 1000000,
+        Discount_Type: 'fixed',
         Storage: '512GB',
         Condition: 'Grade A+',
         Images: 'https://example.com/s24u-1.jpg,https://example.com/s24u-2.jpg',
@@ -379,6 +382,15 @@ export default function UploadPage() {
                     Price
                   </th>
                   <th className="text-left text-xs font-semibold text-gray-600 uppercase tracking-wider px-6 py-3">
+                    Discount
+                  </th>
+                  <th className="text-left text-xs font-semibold text-gray-600 uppercase tracking-wider px-6 py-3">
+                    Type
+                  </th>
+                  <th className="text-left text-xs font-semibold text-gray-600 uppercase tracking-wider px-6 py-3">
+                    Images
+                  </th>
+                  <th className="text-left text-xs font-semibold text-gray-600 uppercase tracking-wider px-6 py-3">
                     Condition
                   </th>
                 </tr>
@@ -399,6 +411,20 @@ export default function UploadPage() {
                     </td>
                     <td className="px-6 py-4 font-medium text-gray-900">
                       {formatRupiah(product.price)}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-900">
+                      {(product.discount_value || 0) > 0 
+                        ? formatRupiah(product.discount_value || 0)
+                        : '-'
+                      }
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="inline-flex px-2 py-1 bg-blue-100 text-blue-800 text-xs font-semibold rounded-full">
+                        {product.discount_type || 'percentage'}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-600">
+                      {product.images?.length || 0} image(s)
                     </td>
                     <td className="px-6 py-4">
                       <span className="inline-flex px-2 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded-full">
