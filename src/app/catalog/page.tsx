@@ -1,16 +1,32 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, use } from 'react';
 import ProductCard from '@/components/catalog/ProductCard';
 import { createClient } from '@/lib/supabase';
 import { Product, Brand, SortOption } from '@/types';
 
-export default function CatalogPage() {
+interface CatalogPageProps {
+  searchParams: { brand?: string };
+}
+
+export default function CatalogPage({ searchParams }: CatalogPageProps) {
   const supabase = createClient();
   const [products, setProducts] = useState<Product[]>([]);
   const [selectedBrand, setSelectedBrand] = useState<Brand>('All');
   const [sortOption, setSortOption] = useState<SortOption>('newest');
   const [isLoading, setIsLoading] = useState(true);
+
+  // Read brand from URL query params
+  useEffect(() => {
+    const brandParam = searchParams?.brand;
+    if (brandParam) {
+      // Decode and set the brand filter
+      const decodedBrand = decodeURIComponent(brandParam);
+      if (decodedBrand === 'Apple' || decodedBrand === 'Samsung') {
+        setSelectedBrand(decodedBrand as Brand);
+      }
+    }
+  }, [searchParams?.brand]);
 
   useEffect(() => {
     fetchProducts();
@@ -51,9 +67,9 @@ export default function CatalogPage() {
 
   return (
     <div className="min-h-screen bg-gradient-mesh">
-      {/* Header */}
-      <div className="glass sticky top-0 z-40 backdrop-blur-xl bg-white/70">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      {/* Header - Removed sticky to prevent collision with navbar */}
+      <div className="bg-gradient-subtle/80 backdrop-blur-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
             Product Catalog
           </h1>
