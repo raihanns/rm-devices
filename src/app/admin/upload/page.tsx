@@ -6,6 +6,7 @@ import * as XLSX from 'xlsx';
 import { createClient } from '@/lib/supabase';
 import { Product } from '@/types';
 import toast from 'react-hot-toast';
+import { formatRupiah } from '@/lib/utils';
 
 export default function UploadPage() {
   const router = useRouter();
@@ -138,8 +139,8 @@ export default function UploadPage() {
       });
       setPreviewData([]);
 
-      // Refresh products page
-      router.push('/admin/products');
+      // Force refresh by navigating with a timestamp query param
+      router.push('/admin/products?refresh=' + Date.now());
     } catch (error: any) {
       toast.error(`Upload gagal: ${error.message}`);
       setUploadResult({
@@ -397,7 +398,7 @@ export default function UploadPage() {
                       {product.model}
                     </td>
                     <td className="px-6 py-4 font-medium text-gray-900">
-                      ${product.price.toLocaleString()}
+                      {formatRupiah(product.price)}
                     </td>
                     <td className="px-6 py-4">
                       <span className="inline-flex px-2 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded-full">

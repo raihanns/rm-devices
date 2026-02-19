@@ -9,6 +9,22 @@ interface ProductCardProps {
   product: Product;
 }
 
+// Simple gadget icon component
+function GadgetIcon({ className = "w-20 h-20" }: { className?: string }) {
+  return (
+    <div className={`${className} flex items-center justify-center`}>
+      <svg className="w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        {/* Smartphone/Tablet shape */}
+        <rect x="5" y="2" width="14" height="20" rx="2" ry="2" strokeWidth="1.5" />
+        {/* Screen */}
+        <rect x="7" y="4" width="10" height="16" rx="1" strokeWidth="1" className="opacity-50" />
+        {/* Home button */}
+        <circle cx="12" cy="19" r="1" strokeWidth="1" />
+      </svg>
+    </div>
+  );
+}
+
 export default function ProductCard({ product }: ProductCardProps) {
   const discountValue = product.discount_value || 0;
   const discountType = product.discount_type || 'percentage';
@@ -29,21 +45,28 @@ export default function ProductCard({ product }: ProductCardProps) {
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-|-$/g, '');
 
-  // Get first image or placeholder
-  const imageUrl = product.images?.[0] || product.image_url || '/placeholder-product.png';
+  // Get first image or use null to show icon
+  const imageUrl = product.images?.[0] || product.image_url;
+  const hasImage = !!imageUrl;
 
   return (
     <Link href={`/products/${productSlug}`} className="group">
       <div className="glass-card rounded-2xl overflow-hidden glass-card-hover h-full flex flex-col">
-        {/* Image Container */}
+        {/* Image/Icon Container */}
         <div className="relative aspect-square bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden">
-          <Image
-            src={imageUrl}
-            alt={`${product.brand} ${product.model}`}
-            fill
-            className="object-cover group-hover:scale-110 transition-transform duration-500 ease-out"
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
-          />
+          {hasImage ? (
+            <Image
+              src={imageUrl}
+              alt={`${product.brand} ${product.model}`}
+              fill
+              className="object-cover group-hover:scale-110 transition-transform duration-500 ease-out"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+            />
+          ) : (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <GadgetIcon className="w-24 h-24" />
+            </div>
+          )}
 
           {/* Discount Badge - Only show if discount > 0 */}
           {hasDiscount && (

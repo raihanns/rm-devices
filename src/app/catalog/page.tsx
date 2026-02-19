@@ -6,10 +6,11 @@ import { createClient } from '@/lib/supabase';
 import { Product, Brand, SortOption } from '@/types';
 
 interface CatalogPageProps {
-  searchParams: { brand?: string };
+  searchParams: Promise<{ brand?: string }>;
 }
 
 export default function CatalogPage({ searchParams }: CatalogPageProps) {
+  const resolvedSearchParams = use(searchParams);
   const supabase = createClient();
   const [products, setProducts] = useState<Product[]>([]);
   const [selectedBrand, setSelectedBrand] = useState<Brand>('All');
@@ -18,7 +19,7 @@ export default function CatalogPage({ searchParams }: CatalogPageProps) {
 
   // Read brand from URL query params
   useEffect(() => {
-    const brandParam = searchParams?.brand;
+    const brandParam = resolvedSearchParams?.brand;
     if (brandParam) {
       // Decode and set the brand filter
       const decodedBrand = decodeURIComponent(brandParam);
@@ -26,7 +27,7 @@ export default function CatalogPage({ searchParams }: CatalogPageProps) {
         setSelectedBrand(decodedBrand as Brand);
       }
     }
-  }, [searchParams?.brand]);
+  }, [resolvedSearchParams?.brand]);
 
   useEffect(() => {
     fetchProducts();

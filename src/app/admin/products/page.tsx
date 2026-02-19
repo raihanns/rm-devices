@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, use } from 'react';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase';
 import { Product } from '@/types';
@@ -8,7 +8,12 @@ import toast from 'react-hot-toast';
 import { t } from '@/lib/translations';
 import { formatRupiah } from '@/lib/utils';
 
-export default function ProductsPage() {
+interface ProductsPageProps {
+  searchParams: Promise<{ refresh?: string }>;
+}
+
+export default function ProductsPage({ searchParams }: ProductsPageProps) {
+  const resolvedSearchParams = use(searchParams);
   const supabase = createClient();
   const lang = t('id');
   const [products, setProducts] = useState<Product[]>([]);
@@ -17,6 +22,13 @@ export default function ProductsPage() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [productToDelete, setProductToDelete] = useState<string | null>(null);
   const [isToggling, setIsToggling] = useState<string | null>(null);
+
+  // Refetch when refresh param changes (after upload)
+  useEffect(() => {
+    if (resolvedSearchParams?.refresh) {
+      fetchProducts();
+    }
+  }, [resolvedSearchParams?.refresh]);
 
   useEffect(() => {
     fetchProducts();
