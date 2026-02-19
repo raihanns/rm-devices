@@ -41,6 +41,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
             <button
               onClick={() => setSidebarOpen(false)}
               className="lg:hidden p-1 rounded hover:bg-gray-800 flex-shrink-0"
+              aria-label="Close menu"
             >
               <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -49,8 +50,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           </div>
 
           {/* Navigation */}
-          <div className="flex-1 overflow-y-auto py-6 flex-shrink-0">
-            <AdminSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} collapsed={sidebarCollapsed} />
+          <div className="flex-1 overflow-y-auto py-6 px-4 flex-shrink-0">
+            <AdminSidebar collapsed={sidebarCollapsed} />
           </div>
         </div>
       </aside>
