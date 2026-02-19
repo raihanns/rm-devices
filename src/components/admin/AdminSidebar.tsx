@@ -8,9 +8,10 @@ import { useState } from 'react';
 interface SidebarProps {
   isOpen: boolean;
   onClose: () => void;
+  collapsed?: boolean;
 }
 
-export default function AdminSidebar({ isOpen, onClose }: SidebarProps) {
+export default function AdminSidebar({ isOpen, onClose, collapsed = false }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const [isSigningOut, setIsSigningOut] = useState(false);
@@ -101,10 +102,13 @@ export default function AdminSidebar({ isOpen, onClose }: SidebarProps) {
                     isActive
                       ? 'bg-gray-800 text-white'
                       : 'text-gray-400 hover:bg-gray-800 hover:text-white'
-                  }`}
+                  } ${collapsed ? 'justify-center' : ''}`}
+                  title={collapsed ? item.name : undefined}
                 >
                   {item.icon}
-                  <span className="font-medium">{item.name}</span>
+                  {!collapsed && (
+                    <span className="font-medium">{item.name}</span>
+                  )}
                 </Link>
               );
             })}
@@ -114,22 +118,30 @@ export default function AdminSidebar({ isOpen, onClose }: SidebarProps) {
           <div className="p-4 border-t border-gray-800 space-y-2">
             <Link
               href="/"
-              className="flex items-center justify-center space-x-2 px-4 py-3 bg-gray-800 text-white rounded-lg hover:bg-gray-700 transition-colors"
+              className={`flex items-center space-x-2 px-4 py-3 bg-gray-800 text-white rounded-lg hover:bg-gray-700 transition-colors ${
+                collapsed ? 'justify-center' : ''
+              }`}
+              title={collapsed ? 'Back to Site' : undefined}
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
               </svg>
-              <span>Back to Site</span>
+              {!collapsed && <span>Back to Site</span>}
             </Link>
             <button
               onClick={handleSignOut}
               disabled={isSigningOut}
-              className="w-full flex items-center justify-center space-x-2 px-4 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className={`w-full flex items-center space-x-2 px-4 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+                collapsed ? 'justify-center' : ''
+              }`}
+              title={collapsed ? 'Sign Out' : undefined}
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
               </svg>
-              <span>{isSigningOut ? 'Signing out...' : 'Sign Out'}</span>
+              {!collapsed && (
+                <span>{isSigningOut ? 'Signing out...' : 'Sign Out'}</span>
+              )}
             </button>
           </div>
         </div>

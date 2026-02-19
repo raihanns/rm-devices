@@ -2,7 +2,6 @@
 
 import { useState, useRef } from 'react';
 import { createClient } from '@/lib/supabase';
-import Image from 'next/image';
 
 interface ImageUploadProps {
   onImagesChange: (urls: string[]) => void;
@@ -185,13 +184,12 @@ export default function ImageUpload({ onImagesChange, existingImages = [] }: Ima
           </p>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {images.map((imageUrl, index) => (
-              <div key={index} className="relative group aspect-square rounded-lg overflow-hidden border border-gray-200">
-                <Image
+              <div key={index} className="relative group aspect-square rounded-lg overflow-hidden border border-gray-200 bg-gray-50">
+                <img
                   src={imageUrl}
                   alt={`Product image ${index + 1}`}
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 768px) 50vw, 25vw"
+                  className="w-full h-full object-cover"
+                  loading="lazy"
                 />
                 
                 {/* Overlay with actions */}
