@@ -1,19 +1,23 @@
 import type { Metadata } from "next";
 import { Toaster } from 'react-hot-toast';
+import Navbar from "@/components/ui/Navbar";
+import Footer from "@/components/ui/Footer";
 
 export const metadata: Metadata = {
-  title: "RM Devices Admin",
-  description: "Admin Dashboard for RM Devices",
+  title: "RM Devices | Premium Tech, Delivered",
+  description: "Your trusted source for high-end mobile devices from Apple and Samsung.",
 };
 
-export default function AdminLayout({
+export default function PublicLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
     <>
-      {children}
+      <Navbar />
+      <main className="min-h-screen">{children}</main>
+      <Footer />
       <Toaster
         position="top-right"
         toastOptions={{

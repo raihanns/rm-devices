@@ -270,7 +270,7 @@ export default function ProductsPage({ searchParams }: ProductsPageProps) {
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end space-x-2">
                         <Link
-                          href={`/admin/products/${product.id}`}
+                          href={`/admin/products/edit/${product.id}`}
                           className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
                         >
                           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
