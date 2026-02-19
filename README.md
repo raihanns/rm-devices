@@ -1,36 +1,83 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# RM Devices - Complete Documentation
 
-## Getting Started
+All documentation has been consolidated into a single comprehensive file.
 
-First, run the development server:
+## 📖 Read the Complete Documentation
 
+**File:** `COMPLETE_DOCUMENTATION.md`
+
+This single file contains everything you need:
+
+1. **Getting Started** - Installation and setup
+2. **Database Setup** - All migrations in correct order
+3. **Authentication** - Supabase Auth configuration
+4. **Product Management** - CRUD operations guide
+5. **Multi-Image Upload** - Complete feature guide
+6. **Flexible Discounts** - Percentage and fixed amounts
+7. **Bulk Upload** - Excel/CSV import
+8. **Troubleshooting** - Common issues and solutions
+9. **API Reference** - Code examples
+10. **Testing Checklist** - Complete QA guide
+
+## ⚡ Quick Start
+
+### 1. Install Dependencies
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Configure Environment
+```bash
+cp .env.local.example .env.local
+# Edit .env.local with your Supabase credentials
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 3. Run Database Migrations
+Open **Supabase SQL Editor** and run all migrations from:
+- See `COMPLETE_DOCUMENTATION.md` → Database Setup section
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 4. Start Development
+```bash
+npm run dev
+```
 
-## Learn More
+Visit http://localhost:3000
 
-To learn more about Next.js, take a look at the following resources:
+## 📁 Project Structure
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```
+rm-devices/
+├── COMPLETE_DOCUMENTATION.md  ← Read this first!
+├── .env.local                 ← Your Supabase credentials
+├── src/
+│   ├── app/                   ← Pages and routes
+│   ├── components/            ← React components
+│   ├── lib/                   ← Utilities and clients
+│   └── types/                 ← TypeScript types
+└── package.json               ← Dependencies
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🚀 Features
 
-## Deploy on Vercel
+- ✅ Public catalog with filters
+- ✅ Product detail pages with image galleries
+- ✅ Admin dashboard with real-time KPIs
+- ✅ Complete CRUD operations
+- ✅ Multi-image upload (Supabase Storage)
+- ✅ Flexible discounts (% or fixed Rp)
+- ✅ Bulk upload via Excel/CSV
+- ✅ Active/Inactive toggle
+- ✅ Bahasa Indonesia language
+- ✅ Indonesian Rupiah currency
+- ✅ Toast notifications
+- ✅ Mobile-first responsive design
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 📞 Support
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+For any questions or issues, refer to:
+- **COMPLETE_DOCUMENTATION.md** - Comprehensive guide
+- **Troubleshooting section** - Common problems and solutions
+
+---
+
+**Version:** 1.0 | **2026**
