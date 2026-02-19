@@ -26,80 +26,89 @@ export default function ProductCard({ product }: ProductCardProps) {
 
   // Generate consistent slug from model name
   const productSlug = product.model.toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')  // Replace non-alphanumeric with hyphen
-    .replace(/^-|-$/g, '');       // Remove leading/trailing hyphens
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
 
   // Get first image or placeholder
   const imageUrl = product.images?.[0] || product.image_url || '/placeholder-product.png';
 
   return (
     <Link href={`/products/${productSlug}`} className="group">
-      <div className="group bg-white rounded-2xl border border-gray-200 overflow-hidden hover:shadow-xl hover:border-gray-300 transition-all duration-300">
+      <div className="glass-card rounded-2xl overflow-hidden glass-card-hover h-full flex flex-col">
         {/* Image Container */}
-        <div className="relative aspect-square bg-gray-50 overflow-hidden">
+        <div className="relative aspect-square bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden">
           <Image
             src={imageUrl}
             alt={`${product.brand} ${product.model}`}
             fill
-            className="object-cover group-hover:scale-105 transition-transform duration-300"
+            className="object-cover group-hover:scale-110 transition-transform duration-500 ease-out"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
           />
 
           {/* Discount Badge - Only show if discount > 0 */}
           {hasDiscount && (
-            <div className="absolute top-3 right-3">
-              <span className="px-3 py-1 bg-red-500 text-white text-xs font-bold rounded-full">
+            <div className="absolute top-3 right-3 animate-scale-in">
+              <span className="px-3 py-1.5 bg-gradient-to-r from-red-500 to-red-600 text-white text-xs font-bold rounded-full shadow-lg">
                 -{formatDiscount(discountValue, discountType)}
               </span>
             </div>
           )}
 
           {/* Condition Badge with Color */}
-          <div className="absolute top-3 left-3">
-            <span className={`px-3 py-1 backdrop-blur-sm text-xs font-semibold rounded-full ${conditionColor}`}>
+          <div className="absolute top-3 left-3 animate-scale-in">
+            <span className={`px-3 py-1.5 backdrop-blur-md text-xs font-semibold rounded-full shadow-md ${conditionColor}`}>
               {product.condition}
             </span>
+          </div>
+
+          {/* Quick View Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            <div className="absolute bottom-4 left-4 right-4">
+              <span className="inline-flex items-center px-4 py-2 glass-dark text-white text-sm font-medium rounded-lg">
+                View Details
+                <svg className="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </span>
+            </div>
           </div>
         </div>
 
         {/* Content */}
-        <div className="p-5">
+        <div className="p-5 flex-1 flex flex-col">
           {/* Brand */}
-          <p className="text-sm text-gray-500 font-medium mb-1">{product.brand}</p>
-          
+          <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">
+            {product.brand}
+          </p>
+
           {/* Model */}
-          <h3 className="text-lg font-semibold text-gray-900 mb-2 truncate">
+          <h3 className="text-lg font-semibold text-gray-900 mb-3 line-clamp-1">
             {product.model}
           </h3>
 
           {/* Specs */}
-          <div className="flex items-center space-x-2 mb-3">
-            <span className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-md">
+          <div className="flex items-center space-x-2 mb-4">
+            <span className="px-2.5 py-1 glass-card text-gray-600 text-xs rounded-lg font-medium">
               {product.storage}
             </span>
           </div>
 
           {/* Price */}
-          <div className="flex items-center justify-between">
-            <div className="flex flex-col">
-              {hasDiscount ? (
-                <>
-                  <p className="text-sm text-gray-400 line-through">
-                    {formatRupiah(product.price)}
-                  </p>
-                  <p className="text-xl font-bold text-red-600">
-                    {formatRupiah(discountedPrice)}
-                  </p>
-                </>
-              ) : (
-                <p className="text-xl font-bold text-gray-900">
+          <div className="mt-auto flex items-baseline space-x-2">
+            {hasDiscount ? (
+              <>
+                <p className="text-xl font-bold text-red-600">
+                  {formatRupiah(discountedPrice)}
+                </p>
+                <p className="text-sm text-gray-400 line-through">
                   {formatRupiah(product.price)}
                 </p>
-              )}
-            </div>
-            <button className="px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition-colors opacity-0 group-hover:opacity-100">
-              Lihat Detail
-            </button>
+              </>
+            ) : (
+              <p className="text-xl font-bold text-gray-900">
+                {formatRupiah(product.price)}
+              </p>
+            )}
           </div>
         </div>
       </div>

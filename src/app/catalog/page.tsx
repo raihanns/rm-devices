@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import ProductCard from '@/components/catalog/ProductCard';
-import ProductFilters from '@/components/catalog/ProductFilters';
 import { createClient } from '@/lib/supabase';
 import { Product, Brand, SortOption } from '@/types';
 
@@ -19,7 +18,6 @@ export default function CatalogPage() {
 
   async function fetchProducts() {
     try {
-      // Only fetch active products for public catalog
       let query = supabase
         .from('products')
         .select('*')
@@ -52,15 +50,15 @@ export default function CatalogPage() {
     });
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-mesh">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200">
+      <div className="glass sticky top-0 z-40 backdrop-blur-xl bg-white/70">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
             Product Catalog
           </h1>
-          <p className="text-gray-600 max-w-2xl">
-            Browse our selection of premium mobile devices from Apple and Samsung. 
+          <p className="text-gray-600 max-w-2xl text-lg">
+            Browse our selection of premium mobile devices from Apple and Samsung.
             All devices come with quality guarantee.
           </p>
         </div>
@@ -69,12 +67,47 @@ export default function CatalogPage() {
       {/* Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Filters */}
-        <ProductFilters
-          selectedBrand={selectedBrand}
-          onBrandChange={setSelectedBrand}
-          sortOption={sortOption}
-          onSortChange={setSortOption}
-        />
+        <div className="glass-card rounded-2xl p-5 mb-8">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            {/* Brand Filter */}
+            <div>
+              <label className="text-sm font-medium text-gray-700 mb-2.5 block">
+                Brand
+              </label>
+              <div className="flex space-x-2">
+                {(['All', 'Apple', 'Samsung'] as Brand[]).map((brand) => (
+                  <button
+                    key={brand}
+                    onClick={() => setSelectedBrand(brand)}
+                    className={`px-5 py-2.5 rounded-xl font-medium transition-all duration-200 ${
+                      selectedBrand === brand
+                        ? 'bg-gradient-to-r from-gray-900 to-gray-700 text-white shadow-lg transform scale-105'
+                        : 'glass-input text-gray-700 hover:bg-white/80'
+                    }`}
+                  >
+                    {brand}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Sort Options */}
+            <div>
+              <label className="text-sm font-medium text-gray-700 mb-2.5 block">
+                Sort By
+              </label>
+              <select
+                value={sortOption}
+                onChange={(e) => setSortOption(e.target.value as SortOption)}
+                className="px-5 py-2.5 glass-input rounded-xl font-medium text-gray-700 focus:ring-2 focus:ring-gray-900/20 cursor-pointer"
+              >
+                <option value="newest">Newest</option>
+                <option value="price-low">Price: Low to High</option>
+                <option value="price-high">Price: High to Low</option>
+              </select>
+            </div>
+          </div>
+        </div>
 
         {/* Results count */}
         <div className="mb-6 flex items-center justify-between">
@@ -89,26 +122,25 @@ export default function CatalogPage() {
             {[...Array(8)].map((_, i) => (
               <div
                 key={i}
-                className="bg-white rounded-2xl border border-gray-200 overflow-hidden animate-pulse"
+                className="glass-card rounded-2xl overflow-hidden"
               >
-                <div className="aspect-square bg-gray-200" />
+                <div className="aspect-square skeleton" />
                 <div className="p-5 space-y-3">
-                  <div className="h-4 bg-gray-200 rounded w-1/3" />
-                  <div className="h-6 bg-gray-200 rounded w-3/4" />
+                  <div className="h-4 skeleton rounded w-1/3" />
+                  <div className="h-6 skeleton rounded w-3/4" />
                   <div className="flex space-x-2">
-                    <div className="h-6 bg-gray-200 rounded w-16" />
-                    <div className="h-6 bg-gray-200 rounded w-20" />
+                    <div className="h-6 skeleton rounded w-16" />
                   </div>
-                  <div className="h-8 bg-gray-200 rounded w-1/2" />
+                  <div className="h-8 skeleton rounded w-1/2" />
                 </div>
               </div>
             ))}
           </div>
         ) : filteredProducts.length === 0 ? (
           <div className="text-center py-16">
-            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className="w-20 h-20 glass-card rounded-full flex items-center justify-center mx-auto mb-6">
               <svg
-                className="w-8 h-8 text-gray-400"
+                className="w-10 h-10 text-gray-400"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -121,7 +153,7 @@ export default function CatalogPage() {
                 />
               </svg>
             </div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">
               No products found
             </h3>
             <p className="text-gray-600">

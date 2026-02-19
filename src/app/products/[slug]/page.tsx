@@ -6,7 +6,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase';
 import { Product, ConditionColors } from '@/types';
-import { formatRupiah, calculateDiscountedPrice } from '@/lib/utils';
+import { formatRupiah, calculateDiscountedPrice, formatDiscount } from '@/lib/utils';
 import ImageGallery from '@/components/catalog/ImageGallery';
 
 export default function ProductDetailPage() {
@@ -114,16 +114,16 @@ export default function ProductDetailPage() {
     || 'bg-gray-100 text-gray-800';
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-mesh">
       {/* Breadcrumb */}
-      <div className="bg-white border-b border-gray-200">
+      <div className="glass sticky top-0 z-40 backdrop-blur-xl bg-white/70">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <nav className="flex items-center space-x-2 text-sm">
-            <Link href="/" className="text-gray-500 hover:text-gray-700">
+            <Link href="/" className="text-gray-500 hover:text-gray-700 transition-colors">
               Beranda
             </Link>
             <span className="text-gray-400">/</span>
-            <Link href="/catalog" className="text-gray-500 hover:text-gray-700">
+            <Link href="/catalog" className="text-gray-500 hover:text-gray-700 transition-colors">
               Katalog
             </Link>
             <span className="text-gray-400">/</span>
@@ -144,7 +144,7 @@ export default function ProductDetailPage() {
           </div>
 
           {/* Info */}
-          <div className="space-y-8">
+          <div className="space-y-6">
             <div>
               <p className="text-sm text-gray-500 font-medium mb-2">
                 {product.brand}
@@ -173,24 +173,24 @@ export default function ProductDetailPage() {
             </div>
 
             {/* Specs */}
-            <div className="bg-white rounded-xl border border-gray-200 p-6">
+            <div className="glass-card rounded-2xl p-6">
               <h2 className="text-lg font-semibold text-gray-900 mb-4">
                 Spesifikasi
               </h2>
-              <div className="space-y-4">
-                <div className="flex justify-between py-3 border-b border-gray-100">
+              <div className="space-y-3">
+                <div className="flex justify-between py-2.5 border-b border-gray-100">
                   <span className="text-gray-600">SKU</span>
                   <span className="font-medium text-gray-900">{product.sku}</span>
                 </div>
-                <div className="flex justify-between py-3 border-b border-gray-100">
+                <div className="flex justify-between py-2.5 border-b border-gray-100">
                   <span className="text-gray-600">Penyimpanan</span>
                   <span className="font-medium text-gray-900">{product.storage}</span>
                 </div>
-                <div className="flex justify-between py-3 border-b border-gray-100">
+                <div className="flex justify-between py-2.5 border-b border-gray-100">
                   <span className="text-gray-600">Kondisi</span>
                   <span className="font-medium text-gray-900">{product.condition}</span>
                 </div>
-                <div className="flex justify-between py-3">
+                <div className="flex justify-between py-2.5">
                   <span className="text-gray-600">Merek</span>
                   <span className="font-medium text-gray-900">{product.brand}</span>
                 </div>
@@ -203,20 +203,20 @@ export default function ProductDetailPage() {
                 href={`https://wa.me/6281234567890?text=Halo%20RM%20Devices,%20saya%20tertarik%20dengan%20${encodeURIComponent(product.model)}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex-1 px-8 py-4 bg-green-600 text-white rounded-xl font-semibold hover:bg-green-700 transition-colors text-center"
+                className="flex-1 px-8 py-4 bg-gradient-to-r from-green-600 to-green-500 text-white rounded-xl font-semibold hover:from-green-700 hover:to-green-600 transition-all duration-200 shadow-lg hover:shadow-xl text-center transform hover:scale-105"
               >
                 Hubungi via WhatsApp
               </a>
               <Link
                 href="/catalog"
-                className="px-8 py-4 bg-white text-gray-900 rounded-xl font-semibold hover:bg-gray-100 transition-colors border border-gray-200 text-center"
+                className="px-8 py-4 glass-card text-gray-900 rounded-xl font-semibold hover:bg-white/90 transition-all duration-200 text-center"
               >
                 Kembali ke Katalog
               </Link>
             </div>
 
             {/* Additional Info */}
-            <div className="bg-gray-50 rounded-xl p-6 space-y-3">
+            <div className="glass-card rounded-2xl p-6 space-y-4">
               <div className="flex items-start space-x-3">
                 <svg
                   className="w-6 h-6 text-green-600 flex-shrink-0 mt-0.5"

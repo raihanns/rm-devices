@@ -10,6 +10,7 @@ export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [scrolled, setScrolled] = useState(false);
   const supabase = createClient();
 
   useEffect(() => {
@@ -24,8 +25,21 @@ export default function Navbar() {
       setIsLoggedIn(!!session);
     });
 
-    return () => subscription.unsubscribe();
+    // Handle scroll
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, [supabase.auth]);
+
+  useEffect(() => {
+    // Cleanup subscription
+      return () => {
+        // Subscription cleanup handled by Supabase
+      };
+  }, []);
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
@@ -34,50 +48,57 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="bg-white/80 backdrop-blur-md border-b border-gray-100 sticky top-0 z-50">
+    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+      scrolled 
+        ? 'glass py-3' 
+        : 'bg-transparent py-5'
+    }`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+        <div className="flex justify-between items-center h-14">
           {/* Logo */}
-          <Link href="/" className="flex items-center space-x-2">
-            <div className="w-10 h-10 bg-gradient-to-br from-gray-900 to-gray-700 rounded-xl flex items-center justify-center">
-              <span className="text-white font-bold text-lg">RM</span>
+          <Link href="/" className="flex items-center space-x-2.5 group">
+            <div className="w-9 h-9 bg-gradient-to-br from-gray-900 to-gray-700 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-shadow duration-300">
+              <span className="text-white font-bold text-base">RM</span>
             </div>
-            <span className="text-xl font-semibold text-gray-900">RM Devices</span>
+            <span className="text-lg font-semibold text-gray-900 group-hover:text-gray-600 transition-colors duration-300">
+              RM Devices
+            </span>
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
+          <div className="hidden md:flex items-center space-x-1">
             <Link
               href="/"
-              className="text-gray-600 hover:text-gray-900 transition-colors font-medium"
+              className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-white/50 rounded-lg transition-all duration-200"
             >
               Home
             </Link>
             <Link
               href="/catalog"
-              className="text-gray-600 hover:text-gray-900 transition-colors font-medium"
+              className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-white/50 rounded-lg transition-all duration-200"
             >
               Catalog
             </Link>
             <Link
               href="/testimonials"
-              className="text-gray-600 hover:text-gray-900 transition-colors font-medium"
+              className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-white/50 rounded-lg transition-all duration-200"
             >
               Testimonials
             </Link>
+            
             {isLoading ? (
-              <div className="w-20 h-10 bg-gray-200 rounded-lg animate-pulse" />
+              <div className="w-20 h-9 ml-2 rounded-lg skeleton" />
             ) : isLoggedIn ? (
-              <div className="flex items-center space-x-3">
+              <div className="flex items-center space-x-2 ml-2">
                 <Link
                   href="/admin/dashboard"
-                  className="text-gray-600 hover:text-gray-900 transition-colors font-medium"
+                  className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-white/50 rounded-lg transition-all duration-200"
                 >
                   Dashboard
                 </Link>
                 <button
                   onClick={handleSignOut}
-                  className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium"
+                  className="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105"
                 >
                   Sign Out
                 </button>
@@ -85,7 +106,7 @@ export default function Navbar() {
             ) : (
               <Link
                 href="/admin"
-                className="px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors font-medium"
+                className="ml-2 px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-gray-900 to-gray-700 hover:from-gray-800 hover:to-gray-600 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105"
               >
                 Admin
               </Link>
@@ -95,10 +116,11 @@ export default function Navbar() {
           {/* Mobile menu button */}
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="md:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors"
+            className="md:hidden p-2 rounded-lg hover:bg-white/50 transition-all duration-200"
+            aria-label="Toggle menu"
           >
             <svg
-              className="w-6 h-6"
+              className="w-6 h-6 text-gray-700"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -123,60 +145,64 @@ export default function Navbar() {
         </div>
 
         {/* Mobile Navigation */}
-        {isMenuOpen && (
-          <div className="md:hidden py-4 border-t border-gray-100">
-            <div className="flex flex-col space-y-4">
-              <Link
-                href="/"
-                className="text-gray-600 hover:text-gray-900 transition-colors font-medium"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Home
-              </Link>
-              <Link
-                href="/catalog"
-                className="text-gray-600 hover:text-gray-900 transition-colors font-medium"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Catalog
-              </Link>
-              <Link
-                href="/testimonials"
-                className="text-gray-600 hover:text-gray-900 transition-colors font-medium"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Testimonials
-              </Link>
-              {isLoading ? (
-                <div className="w-full h-10 bg-gray-200 rounded-lg animate-pulse" />
-              ) : isLoggedIn ? (
-                <>
-                  <Link
-                    href="/admin/dashboard"
-                    className="text-gray-600 hover:text-gray-900 transition-colors font-medium text-center"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    Dashboard
-                  </Link>
-                  <button
-                    onClick={handleSignOut}
-                    className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium"
-                  >
-                    Sign Out
-                  </button>
-                </>
-              ) : (
+        <div className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out ${
+          isMenuOpen ? 'max-h-64 opacity-100 mt-3' : 'max-h-0 opacity-0'
+        }`}>
+          <div className="glass rounded-2xl p-3 space-y-1">
+            <Link
+              href="/"
+              className="block px-4 py-2.5 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-white/50 rounded-xl transition-all duration-200"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Home
+            </Link>
+            <Link
+              href="/catalog"
+              className="block px-4 py-2.5 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-white/50 rounded-xl transition-all duration-200"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Catalog
+            </Link>
+            <Link
+              href="/testimonials"
+              className="block px-4 py-2.5 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-white/50 rounded-xl transition-all duration-200"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Testimonials
+            </Link>
+            
+            {isLoading ? (
+              <div className="h-10 rounded-xl skeleton mx-2" />
+            ) : isLoggedIn ? (
+              <>
                 <Link
-                  href="/admin"
-                  className="px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors font-medium text-center"
+                  href="/admin/dashboard"
+                  className="block px-4 py-2.5 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-white/50 rounded-xl transition-all duration-200"
                   onClick={() => setIsMenuOpen(false)}
                 >
-                  Admin
+                  Dashboard
                 </Link>
-              )}
-            </div>
+                <button
+                  onClick={() => {
+                    handleSignOut();
+                    setIsMenuOpen(false);
+                  }}
+                  className="w-full px-4 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 rounded-xl shadow-md transition-all duration-200"
+                >
+                  Sign Out
+                </button>
+              </>
+            ) : (
+              <Link
+                href="/admin"
+                className="block px-4 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-gray-900 to-gray-700 hover:from-gray-800 hover:to-gray-600 rounded-xl shadow-md transition-all duration-200 text-center"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Admin
+              </Link>
+            )}
           </div>
-        )}
+        </div>
       </div>
     </nav>
   );
