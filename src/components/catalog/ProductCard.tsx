@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Product, ConditionColors } from '@/types';
 import { formatRupiah, calculateDiscountedPrice, formatDiscount } from '@/lib/utils';
+import { createClient } from '@/lib/supabase';
 
 interface ProductCardProps {
   product: Product;
@@ -23,6 +24,29 @@ function GadgetIcon({ className = "w-20 h-20" }: { className?: string }) {
       </svg>
     </div>
   );
+}
+
+// Get image URL (handles both storage paths and full URLs)
+function getProductImageUrl(product: Product): { url: string; isLocal: boolean } | null {
+  const imageUrl = product.images?.[0] || product.image_url;
+  
+  if (!imageUrl) return null;
+  
+  // Check if it's a storage path (starts with /)
+  const isLocal = imageUrl.startsWith('/');
+  
+  if (isLocal) {
+    // Convert storage path to public URL
+    const supabase = createClient();
+    const { data } = supabase.storage
+      .from('product-images')
+      .getPublicUrl(imageUrl.replace(/^\//, ''));
+    
+    return { url: data?.publicUrl || imageUrl, isLocal: true };
+  }
+  
+  // Return external URL as-is
+  return { url: imageUrl, isLocal: false };
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
@@ -45,9 +69,10 @@ export default function ProductCard({ product }: ProductCardProps) {
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-|-$/g, '');
 
-  // Get first image or use null to show icon
-  const imageUrl = product.images?.[0] || product.image_url;
-  const hasImage = !!imageUrl;
+  // Get image URL
+  const imageData = getProductImageUrl(product);
+  const hasImage = !!imageData?.url;
+  const imageUrl = imageData?.url || '';
 
   return (
     <Link href={`/products/${productSlug}`} className="group">

@@ -2,10 +2,27 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
+import { createClient } from '@/lib/supabase';
 
 interface ImageGalleryProps {
   images: string[];
   productName: string;
+}
+
+// Convert storage path to public URL
+function getPublicUrl(imagePath: string): string {
+  // If it's already a full URL, return as-is
+  if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
+    return imagePath;
+  }
+  
+  // Convert storage path to public URL
+  const supabase = createClient();
+  const { data } = supabase.storage
+    .from('product-images')
+    .getPublicUrl(imagePath.replace(/^\//, ''));
+  
+  return data?.publicUrl || imagePath;
 }
 
 export default function ImageGallery({ images, productName }: ImageGalleryProps) {
@@ -25,6 +42,10 @@ export default function ImageGallery({ images, productName }: ImageGalleryProps)
   const selectedImage = images[selectedImageIndex];
   const hasMultipleImages = images.length > 1;
 
+  // Convert storage path to public URL for display
+  const displayImages = images.map(getPublicUrl);
+  const displaySelectedImage = displayImages[selectedImageIndex] || '';
+
   const goToPrevious = () => {
     setSelectedImageIndex((prev) => (prev > 0 ? prev - 1 : images.length - 1));
   };
@@ -37,14 +58,22 @@ export default function ImageGallery({ images, productName }: ImageGalleryProps)
     <div className="space-y-4">
       {/* Main Image */}
       <div className="relative aspect-square bg-gradient-to-br from-gray-50 to-gray-100 rounded-3xl overflow-hidden glass-card">
-        <Image
-          src={selectedImage}
-          alt={`${productName} - Image ${selectedImageIndex + 1}`}
-          fill
-          className="object-cover"
-          sizes="(max-width: 1024px) 100vw, 50vw"
-          priority
-        />
+        {displaySelectedImage ? (
+          <Image
+            src={displaySelectedImage}
+            alt={`${productName} - Image ${selectedImageIndex + 1}`}
+            fill
+            className="object-cover"
+            sizes="(max-width: 1024px) 100vw, 50vw"
+            priority
+          />
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <svg className="w-20 h-20 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+          </div>
+        )}
 
         {/* Navigation Arrows (only if multiple images) */}
         {hasMultipleImages && (
@@ -81,7 +110,7 @@ export default function ImageGallery({ images, productName }: ImageGalleryProps)
       {/* Thumbnail Strip */}
       {hasMultipleImages && (
         <div className="flex space-x-3 overflow-x-auto py-2 px-1">
-          {images.map((image, index) => (
+          {displayImages.map((image, index) => (
             <button
               key={index}
               onClick={() => setSelectedImageIndex(index)}

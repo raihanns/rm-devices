@@ -7,6 +7,7 @@ import { createClient } from '@/lib/supabase';
 import { Product } from '@/types';
 import toast from 'react-hot-toast';
 import { formatRupiah } from '@/lib/utils';
+import { processImageUrls } from '@/lib/image-upload';
 
 export default function UploadPage() {
   const router = useRouter();
@@ -107,6 +108,23 @@ export default function UploadPage() {
     try {
       // Prepare data for upsert (update if SKU exists, insert if new)
       const productsToInsert = previewData.map(({ id, ...rest }) => rest);
+
+      toast.loading('Downloading and uploading images...', { duration: 5000 });
+
+      // Process images for each product
+      for (let i = 0; i < productsToInsert.length; i++) {
+        const product = productsToInsert[i];
+        
+        if (product.images && product.images.length > 0) {
+          // Download images from URLs and upload to storage
+          const storagePaths = await processImageUrls(product.images, supabase);
+          product.images = storagePaths;
+        }
+
+        toast.loading(`Processing ${i + 1}/${productsToInsert.length}...`, { duration: 2000 });
+      }
+
+      toast.success('Images processed successfully!', { duration: 2000 });
 
       // Insert or update products based on SKU
       for (const product of productsToInsert) {
