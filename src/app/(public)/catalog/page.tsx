@@ -13,25 +13,24 @@ export default function CatalogPage({ searchParams }: CatalogPageProps) {
   const resolvedSearchParams = use(searchParams);
   const supabase = createClient();
   const [products, setProducts] = useState<Product[]>([]);
-  const [selectedBrand, setSelectedBrand] = useState<Brand>('All');
+  const [selectedBrand, setSelectedBrand] = useState<string>('All');
   const [sortOption, setSortOption] = useState<SortOption>('newest');
   const [searchQuery, setSearchQuery] = useState('');
   const [isLoading, setIsLoading] = useState(true);
+  const [availableBrands, setAvailableBrands] = useState<string[]>([]);
 
   // Read brand from URL query params
   useEffect(() => {
     const brandParam = resolvedSearchParams?.brand;
     if (brandParam) {
-      // Decode and set the brand filter
       const decodedBrand = decodeURIComponent(brandParam);
-      if (decodedBrand === 'Apple' || decodedBrand === 'Samsung') {
-        setSelectedBrand(decodedBrand as Brand);
-      }
+      setSelectedBrand(decodedBrand);
     }
   }, [resolvedSearchParams?.brand]);
 
   useEffect(() => {
     fetchProducts();
+    fetchBrands();
   }, []);
 
   async function fetchProducts() {
@@ -49,6 +48,24 @@ export default function CatalogPage({ searchParams }: CatalogPageProps) {
       console.error('Error fetching products:', error);
     } finally {
       setIsLoading(false);
+    }
+  }
+
+  async function fetchBrands() {
+    try {
+      const { data, error } = await supabase
+        .from('products')
+        .select('brand')
+        .eq('is_active', true)
+        .not('brand', 'is', null);
+
+      if (error) throw error;
+
+      // Get unique brands
+      const uniqueBrands = Array.from(new Set(data?.map(p => p.brand) || []));
+      setAvailableBrands(uniqueBrands.sort());
+    } catch (error) {
+      console.error('Error fetching brands:', error);
     }
   }
 
@@ -144,8 +161,18 @@ export default function CatalogPage({ searchParams }: CatalogPageProps) {
               <label className="text-sm font-medium text-gray-700 mb-2.5 block">
                 Brand
               </label>
-              <div className="flex space-x-2">
-                {(['All', 'Apple', 'Samsung'] as Brand[]).map((brand) => (
+              <div className="flex flex-wrap gap-2">
+                <button
+                  onClick={() => setSelectedBrand('All')}
+                  className={`px-5 py-2.5 rounded-xl font-medium transition-all duration-200 ${
+                    selectedBrand === 'All'
+                      ? 'bg-gradient-to-r from-gray-900 to-gray-700 text-white shadow-lg transform scale-105'
+                      : 'glass-input text-gray-700 hover:bg-white/80'
+                  }`}
+                >
+                  All
+                </button>
+                {availableBrands.map((brand) => (
                   <button
                     key={brand}
                     onClick={() => setSelectedBrand(brand)}
