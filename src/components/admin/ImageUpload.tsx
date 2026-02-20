@@ -2,6 +2,7 @@
 
 import { useState, useRef } from 'react';
 import { createClient } from '@/lib/supabase';
+import { getPublicImageUrl } from '@/lib/image-upload';
 
 interface ImageUploadProps {
   onImagesChange: (urls: string[]) => void;
@@ -15,6 +16,14 @@ export default function ImageUpload({ onImagesChange, existingImages = [] }: Ima
   const [error, setError] = useState<string | null>(null);
   const [images, setImages] = useState<string[]>(existingImages);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Convert storage path to public URL for display
+  const getDisplayUrl = (path: string) => {
+    if (path.startsWith('http://') || path.startsWith('https://')) {
+      return path;
+    }
+    return getPublicImageUrl(supabase, path);
+  };
 
   const uploadToSupabase = async (file: File): Promise<string | null> => {
     try {
@@ -183,14 +192,19 @@ export default function ImageUpload({ onImagesChange, existingImages = [] }: Ima
             {images.length} image{images.length > 1 ? 's' : ''} uploaded
           </p>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {images.map((imageUrl, index) => (
-              <div key={index} className="relative group aspect-square rounded-lg overflow-hidden border border-gray-200 bg-gray-50">
-                <img
-                  src={imageUrl}
-                  alt={`Product image ${index + 1}`}
-                  className="w-full h-full object-cover"
-                  loading="lazy"
-                />
+            {images.map((imagePath, index) => {
+              const displayUrl = getDisplayUrl(imagePath);
+              return (
+                <div key={index} className="relative group aspect-square rounded-lg overflow-hidden border border-gray-200 bg-gray-50">
+                  <img
+                    src={displayUrl}
+                    alt={`Product image ${index + 1}`}
+                    className="w-full h-full object-cover"
+                    loading="lazy"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="100" height="100"%3E%3Crect fill="%23ddd" width="100" height="100"/%3E%3Ctext fill="%23999" x="50%25" y="50%25" text-anchor="middle" dy=".3em"%3ENo Image%3C/text%3E%3C/svg%3E';
+                    }}
+                  />
                 
                 {/* Overlay with actions */}
                 <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center space-x-2">
@@ -248,7 +262,8 @@ export default function ImageUpload({ onImagesChange, existingImages = [] }: Ima
                   </div>
                 )}
               </div>
-            ))}
+              );
+            })}
           </div>
           <p className="text-xs text-gray-500">
             First image will be used as cover. Use arrows to reorder.
