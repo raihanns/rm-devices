@@ -25,7 +25,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       <aside
         className={`fixed top-0 left-0 z-50 h-full bg-gray-900 transition-all duration-300 ease-in-out lg:static lg:h-auto ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
-        } ${sidebarCollapsed ? 'lg:w-0' : 'lg:w-64'} w-64`}
+        } ${sidebarCollapsed ? 'lg:w-0 lg:overflow-hidden' : 'lg:w-64'} w-64`}
       >
         <div className="flex flex-col h-full">
           {/* Logo */}
@@ -40,7 +40,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
             </div>
             <button
               onClick={() => setSidebarOpen(false)}
-              className="lg:hidden p-1 rounded hover:bg-gray-800 flex-shrink-0"
+              className="lg:hidden p-2 rounded-lg hover:bg-gray-800 flex-shrink-0"
               aria-label="Close menu"
             >
               <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -50,7 +50,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           </div>
 
           {/* Navigation */}
-          <div className="flex-1 overflow-y-auto py-6 px-4 flex-shrink-0">
+          <div className={`flex-1 overflow-y-auto py-6 flex-shrink-0 ${sidebarCollapsed ? 'px-2' : 'px-4'}`}>
             <AdminSidebar collapsed={sidebarCollapsed} />
           </div>
         </div>
@@ -62,7 +62,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         <header className="lg:hidden bg-white border-b border-gray-200 h-16 flex items-center justify-between px-4 flex-shrink-0">
           <button
             onClick={() => setSidebarOpen(true)}
-            className="p-2 rounded-lg hover:bg-gray-100"
+            className="p-3 -ml-2 rounded-lg hover:bg-gray-100 transition-colors"
             aria-label="Open menu"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -77,7 +77,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         <div className="hidden lg:flex bg-white border-b border-gray-200 h-14 items-center px-4 flex-shrink-0">
           <button
             onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-            className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+            className="p-3 -ml-2 rounded-lg hover:bg-gray-100 transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
             title={sidebarCollapsed ? 'Show sidebar' : 'Hide sidebar'}
             aria-label={sidebarCollapsed ? 'Show sidebar' : 'Hide sidebar'}
           >
