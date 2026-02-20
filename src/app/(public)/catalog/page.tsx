@@ -15,6 +15,7 @@ export default function CatalogPage({ searchParams }: CatalogPageProps) {
   const [products, setProducts] = useState<Product[]>([]);
   const [selectedBrand, setSelectedBrand] = useState<Brand>('All');
   const [sortOption, setSortOption] = useState<SortOption>('newest');
+  const [searchQuery, setSearchQuery] = useState('');
   const [isLoading, setIsLoading] = useState(true);
 
   // Read brand from URL query params
@@ -53,7 +54,19 @@ export default function CatalogPage({ searchParams }: CatalogPageProps) {
 
   // Filter and sort products
   const filteredProducts = products
-    .filter((product) => selectedBrand === 'All' || product.brand === selectedBrand)
+    .filter((product) => {
+      // Brand filter
+      const brandMatch = selectedBrand === 'All' || product.brand === selectedBrand;
+      
+      // Search filter (model, SKU, storage)
+      const searchLower = searchQuery.toLowerCase();
+      const searchMatch = searchQuery === '' || 
+        product.model.toLowerCase().includes(searchLower) ||
+        product.sku.toLowerCase().includes(searchLower) ||
+        product.storage.toLowerCase().includes(searchLower);
+      
+      return brandMatch && searchMatch;
+    })
     .sort((a, b) => {
       switch (sortOption) {
         case 'price-low':
@@ -86,6 +99,46 @@ export default function CatalogPage({ searchParams }: CatalogPageProps) {
         {/* Filters */}
         <div className="glass-card rounded-2xl p-5 mb-8">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            {/* Search Input */}
+            <div className="flex-1">
+              <label className="text-sm font-medium text-gray-700 mb-2.5 block">
+                Search
+              </label>
+              <div className="relative">
+                <svg
+                  className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
+                </svg>
+                <input
+                  type="text"
+                  placeholder="Search by model, SKU, or storage..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-12 pr-4 py-2.5 glass-input rounded-xl font-medium text-gray-700 placeholder-gray-400 focus:ring-2 focus:ring-gray-900/20 outline-none transition-all"
+                />
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery('')}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-white/50 rounded-full transition-colors"
+                    aria-label="Clear search"
+                  >
+                    <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                )}
+              </div>
+            </div>
+
             {/* Brand Filter */}
             <div>
               <label className="text-sm font-medium text-gray-700 mb-2.5 block">
